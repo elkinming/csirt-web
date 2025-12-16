@@ -1,0 +1,99 @@
+<nz-card nzTitle="各社情セキ推進体制一覧" class="org-card">
+  <!-- ツールバー：新規追加 -->
+  <div class="org-toolbar">
+    <nz-row nzGutter="16">
+      <nz-col nzSpan="3">
+        <button nz-button nzType="primary">メール作成</button>
+      </nz-col>
+      <nz-col nzOffset="2" nzSpan="5">
+        <input nz-input placeholder="入力してください" [(ngModel)]="searchValue" />
+      </nz-col>
+      <nz-col nzSpan="3">
+        <button nz-button nzType="primary">検索</button>
+      </nz-col>
+    </nz-row>
+  </div>
+
+  <!-- ag-Grid 本体 -->
+  <div class="org-grid">
+
+    <nz-table 
+      #nestedTable 
+      [nzData]="rowData" 
+      [nzPageSize]="10" 
+      [nzScroll]="{ x: '100%', y: '350px' }"
+      nzSize="small"
+      nzTableLayout="fixed"
+      nzBordered
+      nzShowPagination
+      [nzPageSize]="10"
+      >
+      <thead>
+        <tr>
+
+          <th nzWidth="140px">
+            メール作成
+            <label nz-checkbox
+              [ngModel]="checked"
+              (ngModelChange)="onAllChecked($event)">
+              全選択/解除
+            </label>
+          </th>
+
+          @for (col1 of listOfColumns1; track $index) {
+            <th [nzWidth]="col1.width">{{col1.name}}</th>
+          }
+
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (data of nestedTable.data; track data) {
+          <tr>
+            @if (data.isMainRecord) {
+              <td
+                [rowSpan]="data.childrenNumber"              
+                [nzChecked]="setOfCheckedId.has(data.id)"
+                (nzCheckedChange)="onItemChecked(data.id, $event)"
+              ></td>
+              <td [rowSpan]="data.childrenNumber">
+                <nz-row nzGutter="8" nzJustify="space-evenly">
+                  <nz-col>
+                    <button nz-button nzType="default">編集</button>
+                  </nz-col>
+                  <nz-col>
+                    <button nz-button nzType="default">削除</button>
+                  </nz-col>
+                </nz-row>
+              </td>
+              <td [rowSpan]="data.childrenNumber">{{ data.companyCode1 }}</td>
+              <td [rowSpan]="data.childrenNumber">{{ data.companyCode2 }}</td>
+              <td [rowSpan]="data.childrenNumber">{{ data.companyType }}</td>
+              <td [rowSpan]="data.childrenNumber">{{ data.companyName }}</td>
+              <td [rowSpan]="data.childrenNumber">{{ data.companyNameEn }}</td>
+              <td [rowSpan]="data.childrenNumber">{{ data.companyShortName }}</td>
+              <td [rowSpan]="data.childrenNumber">{{ data.groupCode }}</td>
+              <td [rowSpan]="data.childrenNumber">{{ data.region }}</td>
+              <td [rowSpan]="data.childrenNumber">{{ data.country }}</td>
+            }
+            <td>{{ data.roleCode }}</td>
+            <td>{{ data.opsEmail }}</td>
+            <td>{{ data.opsUrl }}</td>
+            <td>{{ data.opsEmailUrl }}</td>
+            <td>{{ data.opsVulnerability }}</td>
+            <td>{{ data.opsInfo }}</td>
+            <td>{{ data.deptName }}</td>
+            <td>{{ data.location }}</td>
+            <td>{{ data.position }}</td>
+            <td>{{ data.personName }}</td>
+            <td>{{ data.personCode }}</td>
+            <td>{{ data.email }}</td>
+            <td>{{ data.emergencyContact }}</td>
+            <td>{{ data.language }}</td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+
+  </div>
+</nz-card>
