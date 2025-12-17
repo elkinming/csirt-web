@@ -40,8 +40,25 @@
             </label>
           </th>
 
-          @for (col1 of listOfColumns1; track $index) {
-            <th [nzWidth]="col1.width">{{col1.name}}</th>
+          
+          @for (col1 of listOfColumns1; track $index; let count = $index) {
+            <th [nzWidth]="col1.width">
+              {{col1.name}}
+              @if (count <= 9 && count >= 1) {
+                <nz-filter-trigger 
+                  [(nzVisible)]="isFilterVisible" 
+                  [nzActive]="filterValue1.length > 0 || filterValue2.length > 0 || filterValue3.length > 0" 
+                  [nzDropdownMenu]="menu"
+                  [nzDropdownMenu]="{
+                    template: menu,
+                    context: { column: col.key }
+                  }"
+                  
+                  >
+                  <nz-icon nzType="search" />
+                </nz-filter-trigger>
+              }    
+            </th>
           }
 
         </tr>
@@ -97,3 +114,15 @@
 
   </div>
 </nz-card>
+
+<nz-dropdown-menu #menu="nzDropdownMenu">
+  <ng-template let-column="column">
+    <div class="ant-table-filter-dropdown">
+      <div class="search-box">
+        <input type="text" nz-input placeholder="Search name" [(ngModel)]="searchValue" />
+        <button nz-button nzSize="small" nzType="primary" class="search-button">Search</button>
+        <button nz-button nzSize="small">Reset</button>
+      </div>
+    </div>
+  </ng-template>
+</nz-dropdown-menu>

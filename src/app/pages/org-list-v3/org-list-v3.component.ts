@@ -76,6 +76,10 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
   setOfCheckedId = new Set<number>(); 
   enableCellSpan = true;
   searchValue = '';
+  filterValue1 = '';
+  filterValue2 = '';
+  filterValue3 = '';
+  isFilterVisible = false;
 
   /** 一覧の共通列設定 */
   defaultColDef: ColDef = {
