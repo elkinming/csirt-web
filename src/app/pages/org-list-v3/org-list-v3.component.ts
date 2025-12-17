@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -28,6 +28,10 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { TableRow } from './org-list-v3.models';
 import { generateMockData } from './org-list-v3.utils';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { filter } from 'rxjs';
+import { NzRadioModule } from 'ng-zorro-antd/radio';
+import { NzFlexModule } from 'ng-zorro-antd/flex';
+import { NzSegmentedModule } from 'ng-zorro-antd/segmented';
 
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -61,7 +65,10 @@ const myTheme = themeQuartz.withParams({
     NzDropDownModule, 
     NzIconModule, 
     NzTableModule,
-    NzCheckboxModule
+    NzCheckboxModule,
+    NzRadioModule,
+    NzFlexModule, 
+    NzSegmentedModule
   ],
   templateUrl: './org-list-v3.component.html',
   styleUrls: ['./org-list-v3.component.less'],
@@ -76,10 +83,13 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
   setOfCheckedId = new Set<number>(); 
   enableCellSpan = true;
   searchValue = '';
-  filterValue1 = '';
-  filterValue2 = '';
-  filterValue3 = '';
-  isFilterVisible = false;
+  filterVisibleArray: boolean[] = Array(10).fill(false); 
+  filterActiveArray: boolean[] = Array(10).fill(false); 
+  filterSelectorDataArray: string[] = ['contain', 'prefix', 'not-contain']
+  filterSearchDataArray: string[] = ['', '', '']
+  filterConditionsDataArray: string[] = ['OR', 'OR']
+  activeFilterName = '';
+
 
   /** 一覧の共通列設定 */
   defaultColDef: ColDef = {
@@ -194,6 +204,10 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
       // this.deleteCompany(row.companyName);
       return;
     }
+  }
+
+  setActiveFilter(filterName: string){
+    console.log(filterName)
   }
 
   onAllChecked(event: any){
