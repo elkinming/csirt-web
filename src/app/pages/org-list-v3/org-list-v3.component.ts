@@ -32,6 +32,7 @@ import { filter } from 'rxjs';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzFlexModule } from 'ng-zorro-antd/flex';
 import { NzSegmentedModule } from 'ng-zorro-antd/segmented';
+import { OrgListV3Service } from './org-list-v3.service';
 
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -115,7 +116,8 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
 
   constructor(
     private msg: NzMessageService,
-    private modal: NzModalService
+    private modal: NzModalService,
+    private componentService: OrgListV3Service
   ) {}
 
   ngOnInit(): void {
@@ -149,10 +151,20 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
     ]
 
     // ✅ 初期データ（仮）
-    this.rawDbDataStore = generateMockData(10);
+    // this.rawDbDataStore = generateMockData(10);
+    this.componentService.getAllInformationSecurityRecords().subscribe({
+      next: (value) => {
+        console.log(value);
+        this.rawDbDataStore = value.data;
+        this.refreshRowData();
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    })
 
     // 一覧表示用 rowData を再計算
-    this.refreshRowData();
+    
   }
 
   /** grid 初期化時：列幅をウィンドウサイズに合わせて調整 */
