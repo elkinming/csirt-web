@@ -1,8 +1,8 @@
-import { TableRow } from "./org-list-v3.models";
+import { ColumnFilterState, FilterType, InformationSecuritySearchDto, LogicCondition, TableRow } from "./org-list-v3.models";
 
 const detailedInfo = [
   {
-    roleCode: '1_最高責任者',
+    roleCode: 1,
     opsEmail: 'X',
     opsUrl: '日',
     opsEmailUrl: '日',
@@ -18,7 +18,7 @@ const detailedInfo = [
     language: 'Japanese	',
   },
   {
-    roleCode: '2_運用管理責任者',
+    roleCode:   2,
     opsEmail: '日',
     opsUrl: '日',
     opsEmailUrl: '日',
@@ -34,7 +34,7 @@ const detailedInfo = [
     language: 'Chinese	',
   },
   {
-    roleCode: '3_運用管理担当者',
+    roleCode: 3,
     opsEmail: '中日',
     opsUrl: '中日',
     opsEmailUrl: '中日',
@@ -50,7 +50,7 @@ const detailedInfo = [
     language: 'Japanese/Chinese',
   },
   {
-    roleCode: '4_CSIRT（正）',
+    roleCode: 4,
     opsEmail: '英日',
     opsUrl: '英日',
     opsEmailUrl: '英日',
@@ -66,7 +66,7 @@ const detailedInfo = [
     language: 'Japanese/English',
   },
   {
-    roleCode: '5_CSIRT（副）',
+    roleCode: 5,
     opsEmail: '×',
     opsUrl: '中日',
     opsEmailUrl: '中日',
@@ -122,6 +122,46 @@ export const generateMockData = (desiredNumber: number) => {
   
   return mockData
 
+}
+
+export const roleCodeList = [
+  "1_最高責任者",
+  "2_運用管理責任者",
+  "3_運用管理担当者",
+  "4_CSIRT(正)",
+  "5_CSIRT(副)"
+]				
+
+export function createState(): ColumnFilterState {
+  return {
+    visible: false,
+    active: false,
+    data: {
+      filterType1: FilterType.Contains,
+      filterType2: FilterType.Contains,
+      filterType3: FilterType.Contains,
+      filterData1: '',
+      filterData2: '',
+      filterData3: '',
+      logicCondition1: LogicCondition.Or,
+      logicCondition2: LogicCondition.Or
+    }
+  };
+}
+
+export function mapColumnFilterToSearchDto(columnFilterObj: any){
+  const searchDto: InformationSecuritySearchDto = {
+    companyCode1: columnFilterObj.companyCode1.data,
+    companyCode2: columnFilterObj.companyCode2.data,
+    companyType: columnFilterObj.companyType.data,
+    companyName: columnFilterObj.companyName.data,
+    companyNameEn: columnFilterObj.companyNameEn.data,
+    companyShortName: columnFilterObj.companyShortName.data,
+    groupCode: columnFilterObj.groupCode.data,
+    region: columnFilterObj.region.data,
+    country: columnFilterObj.country.data,
+  }
+  return searchDto;
 }
 
 

@@ -25,8 +25,8 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzTableModule } from 'ng-zorro-antd/table';
-import { TableRow } from './org-list-v3.models';
-import { generateMockData } from './org-list-v3.utils';
+import { ColumnFilterState, ColumnKey, FilterType, TableRow } from './org-list-v3.models';
+import { createState, generateMockData, mapColumnFilterToSearchDto, roleCodeList } from './org-list-v3.utils';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { filter } from 'rxjs';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
@@ -78,18 +78,29 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
   /** 一覧の列定義 */
   columnDefs: ColDef[] = [];
   listOfColumns1: any[] = [];
-  listOfColumns2: any[] = [];
   checked = false;
   indeterminate = false;
   setOfCheckedId = new Set<number>(); 
   enableCellSpan = true;
   searchValue = '';
-  filterVisibleArray: boolean[] = Array(10).fill(false); 
-  filterActiveArray: boolean[] = Array(10).fill(false); 
-  filterSelectorDataArray: string[] = ['contain', 'prefix', 'not-contain']
-  filterSearchDataArray: string[] = ['', '', '']
-  filterConditionsDataArray: string[] = ['OR', 'OR']
-  activeFilterName = '';
+
+  currentKey: ColumnKey = 'companyCode1';
+
+  filterState: any = {
+    companyCode1: createState(),
+    companyCode2: createState(),
+    companyType: createState(),
+    companyName: createState(),
+    companyNameEn: createState(),
+    companyShortName: createState(),
+    groupCode: createState(),
+    region: createState(),
+    country: createState()
+  };
+
+  filterStateActive = createState();
+
+  roleCodeList = roleCodeList;
 
 
   /** 一覧の共通列設定 */
@@ -105,8 +116,6 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
   /** 一覧表示データ（1会社=1行） */
   rowData: TableRow[] = [];
 
-  /** ag-Grid API（列幅調整等に使用） */
-  private gridApi?: GridApi;
 
   /**
    * ✅ “仮DB”として保持する明細データ
@@ -116,7 +125,6 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
 
   constructor(
     private msg: NzMessageService,
-    private modal: NzModalService,
     private componentService: OrgListV3Service
   ) {}
 
@@ -124,30 +132,30 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
     // 一覧の列定義（操作列・会社名は固定幅、残りは flex で均等）
 
     this.listOfColumns1 = [
-      { name: '操作', width: '200px'},
-      { name: '会社コード1', width: '120px'},
-      { name: '会社コード2', width: '120px'},
-      { name: '会社種別', width: '100px'},
-      { name: '会社名', width: '100px'},
-      { name: '会社名英語', width: '120px'},
-      { name: '会社略称', width: '100px'},
-      { name: 'グループコード', width: '140px'},
-      { name: '地域', width: '100px'},
-      { name: '国', width: '100px'},
-      { name: '役割コード', width: '120px'},
-      { name: 'メールオプション', width: '160px'},
-      { name: 'URLオプション', width: '140px'},
-      { name: 'メール・URLオプション', width: '180px'},
-      { name: '脆弱性オプション', width: '160px'},
-      { name: '情報オプション', width: '140px'},
-      { name: '部署名', width: '100px'},
-      { name: '勤務地', width: '100px'},
-      { name: '役職', width: '100px'},
-      { name: '氏名', width: '100px'},
-      { name: '氏名コード', width: '100px'},
-      { name: 'メールアドレス', width: '140px'},
-      { name: '緊急連絡先', width: '120px'},
-      { name: '言語', width: '100px'},
+      { key: '', name: '操作', width: '200px'},
+      { key: 'companyCode1', name: '会社コード1', width: '120px'},
+      { key: 'companyCode2', name: '会社コード2', width: '120px'},
+      { key: 'companyType', name: '会社種別', width: '100px'},
+      { key: 'companyName', name: '会社名', width: '100px'},
+      { key: 'companyNameEn', name: '会社名英語', width: '120px'},
+      { key: 'companyShortName', name: '会社略称', width: '100px'},
+      { key: 'groupCode', name: 'グループコード', width: '140px'},
+      { key: 'region', name: '地域', width: '100px'},
+      { key: 'country', name: '国', width: '100px'},
+      { key: '', name: '役割コード', width: '120px'},
+      { key: '', name: 'メールオプション', width: '160px'},
+      { key: '', name: 'URLオプション', width: '140px'},
+      { key: '', name: 'メール・URLオプション', width: '180px'},
+      { key: '', name: '脆弱性オプション', width: '160px'},
+      { key: '', name: '情報オプション', width: '140px'},
+      { key: '', name: '部署名', width: '140px'},
+      { key: '', name: '勤務地', width: '100px'},
+      { key: '', name: '役職', width: '100px'},
+      { key: '', name: '氏名', width: '100px'},
+      { key: '', name: '氏名コード', width: '100px'},
+      { key: '', name: 'メールアドレス', width: '140px'},
+      { key: '', name: '緊急連絡先', width: '120px'},
+      { key: '', name: '言語', width: '100px'},
     ]
 
     // ✅ 初期データ（仮）
@@ -167,23 +175,9 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
     
   }
 
-  /** grid 初期化時：列幅をウィンドウサイズに合わせて調整 */
-  onGridReady(e: GridReadyEvent) {
-    this.gridApi = e.api;
-    this.gridApi.sizeColumnsToFit();
-    window.addEventListener('resize', this.handleResize);
-  }
-
-  /** 初回描画後：列幅を再調整（モーダル/初期レイアウトでズレることがあるため） */
-  onFirstDataRendered() {
-    this.gridApi?.sizeColumnsToFit();
-  }
-
-  /** 画面リサイズ時：列幅を再調整 */
-  private handleResize = () => this.gridApi?.sizeColumnsToFit();
 
   ngOnDestroy() {
-    window.removeEventListener('resize', this.handleResize);
+    // window.removeEventListener('resize', this.handleResize);
   }
 
   /** 操作列のボタン（HTML） */
@@ -218,8 +212,63 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
     }
   }
 
-  setActiveFilter(filterName: string){
-    console.log(filterName)
+  onFilterOpen(columnKey: string){
+    console.log(columnKey);
+    this.currentKey = columnKey as ColumnKey;
+
+  }
+
+  onFilterSearchButton(){
+    
+    const searchDto = mapColumnFilterToSearchDto(this.filterState);
+    this.componentService.getInformationSecurityRecordsByFilter(searchDto).subscribe({
+      next: (value) => {
+        console.log(value);
+        this.msg.success('検索できました');
+        this.rawDbDataStore = value.data;
+        this.refreshRowData();
+        this.filterState[this.currentKey].visible = false;
+        
+        if(
+              this.filterState[this.currentKey].data.filterData1.trim() !== "" 
+          ||  this.filterState[this.currentKey].data.filterData2.trim() !== "" 
+          ||  this.filterState[this.currentKey].data.filterData3.trim() !== "" 
+        ){
+          this.filterState[this.currentKey].active = true;
+
+        } else {
+          this.filterState[this.currentKey].active = false;
+        }
+
+      },
+      error: (error) => {
+        console.log(error);
+        this.msg.error('検索できません');
+      },
+    })
+      
+  }
+
+  onFilterClearButton(){
+    this.filterState[this.currentKey].data.filterData1 = "";
+    this.filterState[this.currentKey].data.filterData2 = "";
+    this.filterState[this.currentKey].data.filterData3 = "";
+    
+    const searchDto = mapColumnFilterToSearchDto(this.filterState);
+    this.componentService.getInformationSecurityRecordsByFilter(searchDto).subscribe({
+      next: (value) => {
+        console.log(value);
+        this.msg.success('クリアできました');
+        this.rawDbDataStore = value.data;
+        this.refreshRowData();
+        this.filterState[this.currentKey].visible = false;
+        this.filterState[this.currentKey].active = false;
+      },
+      error: (error) => {
+        console.log(error);
+        this.msg.error('クリアできません');
+      },
+    })
   }
 
   onAllChecked(event: any){
@@ -256,8 +305,6 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
   /** “仮DB”から一覧表示用 rowData を再生成 */
   private refreshRowData() {
     this.rowData = this.rawDbDataStore;
-    // 反映後に列幅を再調整
-    setTimeout(() => this.gridApi?.sizeColumnsToFit());
   }
 
 }

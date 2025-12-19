@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { of } from 'rxjs';
-import { ApiResponse, TableRow } from './org-list-v3.models';
+import { ApiResponse, InformationSecuritySearchDto, TableRow } from './org-list-v3.models';
 
 const backendUrl = 'http://localhost:5000/api/v1';
 
@@ -17,5 +17,14 @@ export class OrgListV3Service {
 
   getAllInformationSecurityRecords(): Observable<ApiResponse<TableRow[]>> {
     return this.http.get<ApiResponse<TableRow[]>>(`${backendUrl}/information_security/all`);
+  }
+
+  /**
+   * 検索条件に基づいて情報セキュリティのレコードを取得する
+   * @param filterObject 検索条件
+   * @returns 検索結果
+   */
+  getInformationSecurityRecordsByFilter(filterObject: InformationSecuritySearchDto): Observable<ApiResponse<TableRow[]>> {
+    return this.http.post<ApiResponse<TableRow[]>>(`${backendUrl}/information_security/search`,filterObject);
   }
 }

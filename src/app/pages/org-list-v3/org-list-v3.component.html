@@ -21,7 +21,7 @@
       #nestedTable 
       [nzData]="rowData" 
       [nzPageSize]="10" 
-      [nzScroll]="{ x: '100%', y: '350px' }"
+      [nzScroll]="{ x: '100%', y: '400px' }"
       nzSize="small"
       nzTableLayout="fixed"
       nzBordered
@@ -45,14 +45,21 @@
             <th [nzWidth]="col1.width">
               {{col1.name}}
               @if (count <= 9 && count >= 1) {
-                <nz-filter-trigger 
-                  [(nzVisible)]="filterVisibleArray[count]" 
-                  [nzActive]="filterActiveArray[count]" 
-                  [nzDropdownMenu]="menu"                  
-                  >
+
+                <nz-filter-trigger
+                  [(nzVisible)]="filterState[col1.key].visible"
+                  [nzActive]="filterState[col1.key].active"
+                  [nzDropdownMenu]="menu"
                   
-                  <nz-icon (click)="setActiveFilter(col1.name)" nzType="search" />
+                >
+                  <nz-icon (click)="onFilterOpen(col1.key)" nzType="search"></nz-icon>
                 </nz-filter-trigger>
+
+                <nz-dropdown-menu #menu="nzDropdownMenu">
+                  <ng-container
+                    *ngTemplateOutlet="filterTemplate; context: { key: currentKey }">
+                  </ng-container>
+                </nz-dropdown-menu>
               }    
             </th>
           }
@@ -61,7 +68,7 @@
       </thead>
 
       <tbody>
-        @for (data of nestedTable.data; track data) {
+        @for (data of nestedTable.data; track $index) {
           <tr>
             @if (data.isMainRecord) {
               <td
@@ -89,7 +96,7 @@
               <td [rowSpan]="data.childrenNumber">{{ data.region }}</td>
               <td [rowSpan]="data.childrenNumber">{{ data.country }}</td>
             }
-            <td>{{ data.roleCode }}</td>
+            <td>{{ roleCodeList[data.roleCode - 1] }}</td>
             <td>{{ data.opsEmail }}</td>
             <td>{{ data.opsUrl }}</td>
             <td>{{ data.opsEmailUrl }}</td>
@@ -111,42 +118,48 @@
   </div>
 </nz-card>
 
-<nz-dropdown-menu #menu="nzDropdownMenu">
+<ng-template #filterTemplate let-key="key">
   <div class="ant-table-filter-dropdown">
     <div class="search-box">
 
-      <nz-select [(ngModel)]="filterSelectorDataArray[0]">
-        <nz-option nzValue="contain" nzLabel="部分一致"></nz-option>
+      <nz-select [(ngModel)]="filterState[key].data.filterType1">
+        <nz-option [nzValue]="1" nzLabel="部分一致"></nz-option>
+        <nz-option [nzValue]="2" nzLabel="完全一致"></nz-option>
+        <nz-option [nzValue]="3" nzLabel="不一致"></nz-option>
       </nz-select>
-      <input type="text" nz-input placeholder="入力してください" [(ngModel)]="filterSearchDataArray[0]" />
+      <input type="text" nz-input placeholder="入力してください" [(ngModel)]="filterState[key].data.filterData1" />
       <div class="radio-toolbar" nz-flex nzJustify="space-evenly" nzAlign="center" >
-        <nz-radio-group [(ngModel)]="filterConditionsDataArray[0]">
-          <label nz-radio nzValue="AND">AND</label>
-          <label nz-radio nzValue="OR">OR</label>
+        <nz-radio-group [(ngModel)]="filterState[key].data.logicCondition1">
+          <label nz-radio [nzValue]="1">AND</label>
+          <label nz-radio [nzValue]="2">OR</label>
         </nz-radio-group>
       </div>
 
-      <nz-select [(ngModel)]="filterSelectorDataArray[1]">
-        <nz-option nzValue="prefix" nzLabel="前方一致"></nz-option>
+      <nz-select [(ngModel)]="filterState[key].data.filterType2">
+        <nz-option [nzValue]="1" nzLabel="部分一致"></nz-option>
+        <nz-option [nzValue]="2" nzLabel="完全一致"></nz-option>
+        <nz-option [nzValue]="3" nzLabel="不一致"></nz-option>
       </nz-select>
-      <input type="text" nz-input placeholder="入力してください" [(ngModel)]="filterSearchDataArray[1]" />
+      <input type="text" nz-input placeholder="入力してください" [(ngModel)]="filterState[key].data.filterData2" />
       <div class="radio-toolbar" nz-flex nzJustify="space-evenly" nzAlign="center" >
-        <nz-radio-group [(ngModel)]="filterConditionsDataArray[1]">
-          <label nz-radio nzValue="AND">AND</label>
-          <label nz-radio nzValue="OR">OR</label>
+        <nz-radio-group [(ngModel)]="filterState[key].data.logicCondition2">
+          <label nz-radio [nzValue]="1">AND</label>
+          <label nz-radio [nzValue]="2">OR</label>
         </nz-radio-group>
       </div>
 
-      <nz-select [(ngModel)]="filterSelectorDataArray[2]">
-        <nz-option nzValue="not-contain" nzLabel="不一致"></nz-option>
+      <nz-select [(ngModel)]="filterState[key].data.filterType3">
+        <nz-option [nzValue]="1" nzLabel="部分一致"></nz-option>
+        <nz-option [nzValue]="2" nzLabel="完全一致"></nz-option>
+        <nz-option [nzValue]="3" nzLabel="不一致"></nz-option>
       </nz-select>
-      <input type="text" nz-input placeholder="入力してください" [(ngModel)]="filterSearchDataArray[2]" />
+      <input type="text" nz-input placeholder="入力してください" [(ngModel)]="filterState[key].data.filterData3" />
 
       <div class="button-toolbar">
-        <button nz-button nzSize="small" nzType="primary" class="search-button">Search</button>
-        <button nz-button nzSize="small">Reset</button>
+        <button (click)="onFilterSearchButton()" nz-button nzSize="small" nzType="primary" class="search-button">検索</button>
+        <button (click)="onFilterClearButton()"  nz-button nzSize="small">クリア</button>
       </div>
 
     </div>
   </div>
-</nz-dropdown-menu>
+</ng-template>
