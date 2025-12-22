@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { of } from 'rxjs';
@@ -15,8 +15,10 @@ export class OrgListV3Service {
     private http: HttpClient
   ) { }
 
-  getAllInformationSecurityRecords(): Observable<ApiResponse<TableRow[]>> {
-    return this.http.get<ApiResponse<TableRow[]>>(`${backendUrl}/information_security/all`);
+  getAllInformationSecurityRecordsByKeyword(searchKeyword: string): Observable<ApiResponse<TableRow[]>> {
+    let params = new HttpParams();
+    params = params.append('searchKeyword', searchKeyword);
+    return this.http.get<ApiResponse<TableRow[]>>(`${backendUrl}/information_security/all`, {params: params});
   }
 
   /**

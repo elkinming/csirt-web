@@ -33,6 +33,8 @@ import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzFlexModule } from 'ng-zorro-antd/flex';
 import { NzSegmentedModule } from 'ng-zorro-antd/segmented';
 import { OrgListV3Service } from './org-list-v3.service';
+import { ResizableModule, ResizeEvent } from 'angular-resizable-element';
+import { NzResizableModule, NzResizeEvent } from 'ng-zorro-antd/resizable';
 
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -69,7 +71,8 @@ const myTheme = themeQuartz.withParams({
     NzCheckboxModule,
     NzRadioModule,
     NzFlexModule, 
-    NzSegmentedModule
+    NzSegmentedModule,
+    ResizableModule
   ],
   templateUrl: './org-list-v3.component.html',
   styleUrls: ['./org-list-v3.component.less'],
@@ -103,6 +106,7 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
   roleCodeList = roleCodeList;
 
 
+
   /** 一覧の共通列設定 */
   defaultColDef: ColDef = {
     sortable: true,
@@ -132,37 +136,40 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
     // 一覧の列定義（操作列・会社名は固定幅、残りは flex で均等）
 
     this.listOfColumns1 = [
-      { key: '', name: '操作', width: '200px'},
-      { key: 'companyCode1', name: '会社コード1', width: '120px'},
-      { key: 'companyCode2', name: '会社コード2', width: '120px'},
-      { key: 'companyType', name: '会社種別', width: '100px'},
-      { key: 'companyName', name: '会社名', width: '100px'},
-      { key: 'companyNameEn', name: '会社名英語', width: '120px'},
-      { key: 'companyShortName', name: '会社略称', width: '100px'},
-      { key: 'groupCode', name: 'グループコード', width: '140px'},
-      { key: 'region', name: '地域', width: '100px'},
-      { key: 'country', name: '国', width: '100px'},
-      { key: '', name: '役割コード', width: '120px'},
-      { key: '', name: 'メールオプション', width: '160px'},
-      { key: '', name: 'URLオプション', width: '140px'},
-      { key: '', name: 'メール・URLオプション', width: '180px'},
-      { key: '', name: '脆弱性オプション', width: '160px'},
-      { key: '', name: '情報オプション', width: '140px'},
-      { key: '', name: '部署名', width: '140px'},
-      { key: '', name: '勤務地', width: '100px'},
-      { key: '', name: '役職', width: '100px'},
-      { key: '', name: '氏名', width: '100px'},
-      { key: '', name: '氏名コード', width: '100px'},
-      { key: '', name: 'メールアドレス', width: '140px'},
-      { key: '', name: '緊急連絡先', width: '120px'},
-      { key: '', name: '言語', width: '100px'},
+      // { key: '', name: '操作', width: '200px', widthMin: '200px'},
+      { key: 'companyCode1', name: '会社コード1', width: '120px', widthMin: '120px'},
+      { key: 'companyCode2', name: '会社コード2', width: '120px', widthMin: '120px'},
+      { key: 'companyType', name: '会社種別', width: '100px', widthMin: '100px'},
+      { key: 'companyName', name: '会社名', width: '100px', widthMin: '100px'},
+      { key: 'companyNameEn', name: '会社名英語', width: '120px', widthMin: '120px'},
+      { key: 'companyShortName', name: '会社略称', width: '100px', widthMin: '100px'},
+      { key: 'groupCode', name: 'グループコード', width: '140px', widthMin: '140px'},
+      { key: 'region', name: '地域', width: '100px', widthMin: '100px'},
+      { key: 'country', name: '国', width: '100px', widthMin: '100px'},
+      { key: '', name: '役割コード', width: '120px', widthMin: '120px'},
+      { key: '', name: 'メールオプション', width: '160px', widthMin: '160px'},
+      { key: '', name: 'URLオプション', width: '140px', widthMin: '140px'},
+      { key: '', name: 'メール・URLオプション', width: '180px', widthMin: '180px'},
+      { key: '', name: '脆弱性オプション', width: '160px', widthMin: '160px'},
+      { key: '', name: '情報オプション', width: '140px', widthMin: '140px'},
+      { key: '', name: '部署名', width: '140px', widthMin: '140px'},
+      { key: '', name: '勤務地', width: '100px', widthMin: '100px'},
+      { key: '', name: '役職', width: '100px', widthMin: '100px'},
+      { key: '', name: '氏名', width: '100px', widthMin: '100px'},
+      { key: '', name: '氏名コード', width: '100px', widthMin: '100px'},
+      { key: '', name: 'メールアドレス', width: '140px', widthMin: '140px'},
+      { key: '', name: '緊急連絡先', width: '120px', widthMin: '120px'},
+      { key: '', name: '言語', width: '100px', widthMin: '100px'},
     ]
 
     // ✅ 初期データ（仮）
     // this.rawDbDataStore = generateMockData(10);
-    this.componentService.getAllInformationSecurityRecords().subscribe({
+    this.componentService.getAllInformationSecurityRecordsByKeyword("").subscribe({
       next: (value) => {
         console.log(value);
+        value.data.forEach((element, index) => {
+          element.id = index + 1;
+        });
         this.rawDbDataStore = value.data;
         this.refreshRowData();
       },
@@ -225,6 +232,9 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
       next: (value) => {
         console.log(value);
         this.msg.success('検索できました');
+        value.data.forEach((element, index) => {
+          element.id = index + 1;
+        });
         this.rawDbDataStore = value.data;
         this.refreshRowData();
         this.filterState[this.currentKey].visible = false;
@@ -258,6 +268,9 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
     this.componentService.getInformationSecurityRecordsByFilter(searchDto).subscribe({
       next: (value) => {
         console.log(value);
+        value.data.forEach((element, index) => {
+          element.id = index + 1;
+        });
         this.msg.success('クリアできました');
         this.rawDbDataStore = value.data;
         this.refreshRowData();
@@ -271,13 +284,20 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
     })
   }
 
-  onAllChecked(event: any){
-
+  onAllChecked(checked: boolean): void {
+    this.rowData.forEach(({ id }) => this.updateCheckedSet(id, checked));
+    this.refreshCheckedStatus();
   }
 
   onItemChecked(id: number, checked: boolean): void {
     this.updateCheckedSet(id, checked);
-    // this.refreshCheckedStatus();
+    this.refreshCheckedStatus();
+  }
+
+  refreshCheckedStatus(): void {
+    const listOfMainRecords = this.rowData.filter(({ isMainRecord }) => isMainRecord);
+    this.checked = listOfMainRecords.every(({ id }) => this.setOfCheckedId.has(id));
+    this.indeterminate = listOfMainRecords.some(({ id }) => this.setOfCheckedId.has(id)) && !this.checked;
   }
 
   updateCheckedSet(id: number, checked: boolean): void {
@@ -286,6 +306,32 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
     } else {
       this.setOfCheckedId.delete(id);
     }
+  }
+
+  searchByKeyword(){
+    this.componentService.getAllInformationSecurityRecordsByKeyword(this.searchValue).subscribe({
+      next: (value) => {
+        console.log(value);
+        value.data.forEach((element, index) => {
+          element.id = index + 1;
+        });
+        this.msg.success('検索できました');
+        this.rawDbDataStore = value.data;
+        this.refreshRowData();
+      },
+      error: (error) => {
+        console.log(error);
+        this.msg.error('検索できません');
+      },
+    })
+  }
+
+  onResizeEnd(event: ResizeEvent, columnIndex: number): void {
+    console.log('Element was resized', event);
+    console.log(columnIndex);
+    const minWidth = Number(this.listOfColumns1[columnIndex].widthMin.split("px")[0]);
+    const newWidth = event.rectangle.width! < minWidth ? minWidth : event.rectangle.width;
+    this.listOfColumns1[columnIndex].width = `${newWidth}px`;
   }
 
 

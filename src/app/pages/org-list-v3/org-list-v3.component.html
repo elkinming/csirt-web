@@ -9,7 +9,7 @@
         <input nz-input placeholder="入力してください" [(ngModel)]="searchValue" />
       </nz-col>
       <nz-col nzSpan="3">
-        <button nz-button nzType="primary">検索</button>
+        <button (click)="searchByKeyword()" nz-button nzType="primary">検索</button>
       </nz-col>
     </nz-row>
   </div>
@@ -20,31 +20,35 @@
     <nz-table 
       #nestedTable 
       [nzData]="rowData" 
-      [nzPageSize]="10" 
+      [(nzPageSize)]="rowData.length"
       [nzScroll]="{ x: '100%', y: '400px' }"
       nzSize="small"
       nzTableLayout="fixed"
       nzBordered
       nzShowPagination
-      [nzPageSize]="10"
       >
       <thead>
         <tr>
+          
 
-          <th nzWidth="140px">
-            メール作成
-            <label nz-checkbox
-              [ngModel]="checked"
-              (ngModelChange)="onAllChecked($event)">
-              全選択/解除
-            </label>
-          </th>
+          <th
+            nzWidth="65px"
+            [nzChecked]="checked"
+            [nzIndeterminate]="indeterminate"
+            nzLabel="Select all"
+            (nzCheckedChange)="onAllChecked($event)"
+          > 全</th>
 
           
           @for (col1 of listOfColumns1; track $index; let count = $index) {
-            <th [nzWidth]="col1.width">
+            <th 
+              [nzWidth]="col1.width"
+              mwlResizable
+              [enableGhostResize]="true"
+              (resizing)="onResizeEnd($event, count)"
+            >
               {{col1.name}}
-              @if (count <= 9 && count >= 1) {
+              @if (count <= 8 && count >= 0) {
 
                 <nz-filter-trigger
                   [(nzVisible)]="filterState[col1.key].visible"
@@ -60,7 +64,16 @@
                     *ngTemplateOutlet="filterTemplate; context: { key: currentKey }">
                   </ng-container>
                 </nz-dropdown-menu>
+
+                
               }    
+              <div
+                class="resize-handle-right"
+                mwlResizeHandle
+                [resizeEdges]="{ right: true }"
+              >
+                <div class="resize-background"></div>
+              </div>
             </th>
           }
 
@@ -76,7 +89,7 @@
                 [nzChecked]="setOfCheckedId.has(data.id)"
                 (nzCheckedChange)="onItemChecked(data.id, $event)"
               ></td>
-              <td [rowSpan]="data.childrenNumber">
+              <!-- <td [rowSpan]="data.childrenNumber">
                 <nz-row nzGutter="8" nzJustify="space-evenly">
                   <nz-col>
                     <button nz-button nzType="default">編集</button>
@@ -85,7 +98,7 @@
                     <button nz-button nzType="default">削除</button>
                   </nz-col>
                 </nz-row>
-              </td>
+              </td> -->
               <td [rowSpan]="data.childrenNumber">{{ data.companyCode1 }}</td>
               <td [rowSpan]="data.childrenNumber">{{ data.companyCode2 }}</td>
               <td [rowSpan]="data.childrenNumber">{{ data.companyType }}</td>
@@ -96,20 +109,20 @@
               <td [rowSpan]="data.childrenNumber">{{ data.region }}</td>
               <td [rowSpan]="data.childrenNumber">{{ data.country }}</td>
             }
-            <td>{{ roleCodeList[data.roleCode - 1] }}</td>
-            <td>{{ data.opsEmail }}</td>
-            <td>{{ data.opsUrl }}</td>
-            <td>{{ data.opsEmailUrl }}</td>
-            <td>{{ data.opsVulnerability }}</td>
-            <td>{{ data.opsInfo }}</td>
-            <td>{{ data.deptName }}</td>
-            <td>{{ data.location }}</td>
-            <td>{{ data.position }}</td>
-            <td>{{ data.personName }}</td>
-            <td>{{ data.personCode }}</td>
-            <td>{{ data.email }}</td>
-            <td>{{ data.emergencyContact }}</td>
-            <td>{{ data.language }}</td>
+            <td class="join-column">{{ roleCodeList[data.roleCode - 1] }}</td>
+            <td class="join-column">{{ data.opsEmail }}</td>
+            <td class="join-column">{{ data.opsUrl }}</td>
+            <td class="join-column">{{ data.opsEmailUrl }}</td>
+            <td class="join-column">{{ data.opsVulnerability }}</td>
+            <td class="join-column">{{ data.opsInfo }}</td>
+            <td class="join-column">{{ data.deptName }}</td>
+            <td class="join-column">{{ data.location }}</td>
+            <td class="join-column">{{ data.position }}</td>
+            <td class="join-column">{{ data.personName }}</td>
+            <td class="join-column">{{ data.personCode }}</td>
+            <td class="join-column">{{ data.email }}</td>
+            <td class="join-column">{{ data.emergencyContact }}</td>
+            <td class="join-column">{{ data.language }}</td>
           </tr>
         }
       </tbody>
