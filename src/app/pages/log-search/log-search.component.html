@@ -1,0 +1,27 @@
+<nz-card nzTitle="ログ参照">
+  <nz-space nzDirection="vertical" nzSize="middle">
+    <nz-card *nzSpaceItem nzTitle="操作ログ一覧">
+      <nz-space nzSize="large">
+        <div *nzSpaceItem>
+          <span >対象年：</span>
+          <nz-select [(ngModel)]="searchYearSelected">
+            @for (year of yearList; track $index) {
+              <nz-option [nzValue]="year" [nzLabel]="year"></nz-option>
+            }
+          </nz-select>
+        </div>
+        <div *nzSpaceItem>
+          <span>対象月：</span>
+          <nz-select [(ngModel)]="searchMonthSelected">
+            @for (month of monthList; track $index) {
+              <nz-option [nzValue]="month" [nzLabel]="month"></nz-option>
+            }
+          </nz-select>
+        </div>
+        <button *nzSpaceItem nz-button nzType="default">エクスポート</button>
+      </nz-space>
+    </nz-card>
+  
+  </nz-space>
+
+</nz-card>

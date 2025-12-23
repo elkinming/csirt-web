@@ -2,7 +2,7 @@
   <nz-space nzDirection="vertical" nzSize="middle">
     <nz-card *nzSpaceItem nzTitle="会社情報メンテ">
       <nz-space nzSize="small">
-        <button *nzSpaceItem nz-button nzType="default">ダウンロード</button>
+        <button (click)="downloadCompanyData()" *nzSpaceItem nz-button nzType="default">ダウンロード</button>
         <button *nzSpaceItem nz-button nzType="default">アップロード</button>
         <button *nzSpaceItem nz-button nzType="default">ファイルの選択</button>
         <span class="body-text" *nzSpaceItem>選択なし</span>
@@ -11,7 +11,7 @@
   
     <nz-card *nzSpaceItem nzTitle="CSIRTフラグ情報メンテ">
       <nz-space nzSize="small">
-        <button *nzSpaceItem nz-button nzType="default">ダウンロード</button>
+        <button (click)="downloadCompanyRoleOpsData()" *nzSpaceItem nz-button nzType="default">ダウンロード</button>
         <button *nzSpaceItem nz-button nzType="default">アップロード</button>
         <button *nzSpaceItem nz-button nzType="default">ファイルの選択</button>
         <span class="body-text" *nzSpaceItem>選択なし</span>
