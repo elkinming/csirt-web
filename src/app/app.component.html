@@ -14,28 +14,18 @@
     </div>
     <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
 
-      <!-- お知らせ -->
-      <!-- <li nz-menu-item nzMatchRouter>
-        <span nz-icon nzType="notification"></span>
-        <span>お知らせ</span>
-        <a routerLink="/information"></a>
-      </li> -->
-
       <!-- 各社情セキ推進体制一覧 -->
       <li nz-menu-item nzMatchRouter>
         <span nz-icon nzType="team"></span>
         <span>各社情セキ推進体制一覧</span>
-        <a routerLink="/org-list"></a>
-      </li>
-      <li nz-menu-item nzMatchRouter>
-        <span nz-icon nzType="team"></span>
-        <span>各社情セキ推進体制一覧 v2</span>
-        <a routerLink="/org-list-v2"></a>
-      </li>
-      <li nz-menu-item nzMatchRouter>
-        <span nz-icon nzType="team"></span>
-        <span>各社情セキ推進体制一覧 v3</span>
         <a routerLink="/org-list-v3"></a>
+      </li>
+
+      <!-- メンテナンス -->
+      <li nz-menu-item nzMatchRouter>
+        <nz-icon nzType="tool" nzTheme="outline" />
+        <span>メンテナンス</span>
+        <a routerLink="/maintenance"></a>
       </li>
 
     </ul>
