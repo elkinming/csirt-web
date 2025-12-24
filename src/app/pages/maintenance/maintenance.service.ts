@@ -25,4 +25,8 @@ export class MaintenanceService {
   getAllCompanyPermissionsRecords(): Observable<ApiResponse<CompanyPermission[]>> {
     return this.http.get<ApiResponse<CompanyPermission[]>>(`${backendUrl}/company-permissions/all`);
   }
+
+  uploadCompanyData(data: Company[]): Observable<ApiResponse<Company[]>> {
+    return this.http.post<ApiResponse<Company[]>>(`${backendUrl}/company/list`, data);
+  }
 }

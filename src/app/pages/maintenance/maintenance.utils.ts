@@ -49,3 +49,23 @@ export function transformCompanyPermission(data: CompanyPermission[]): Transform
     '最終更新日時': item.lastUpdate,
   }));
 }
+
+export function transformBackToOriginalFormat(data: any[]): any[] {
+  return data.map(item => {
+    return {
+      companyCode1: item['会社コード1'],
+      companyCode2: item['会社コード2'],
+      companyType: item['会社種別'],
+      companyName: item['会社名'],
+      companyNameEn: item['会社名英語'],
+      companyShortName: item['会社略称'],
+      groupCode: item['グループコード'],
+      region: item['地域'],
+      country: item['国'],
+      registUser: item['登録者'],
+      registDate: item['登録日時'],
+      updateUser: item['更新者'],
+      lastUpdate: item['最終更新日時']
+    };
+  });
+}
