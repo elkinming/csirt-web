@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { MaintenanceService } from './maintenance.service';
-import { Company, CompanyRoleOps } from './maintenance.models';
+import { Company, CompanyPermission, CompanyRoleOps } from './maintenance.models';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import { transformCompanyData, transformCompanyRoleOps } from './maintenance.utils';
+import { transformCompanyData, transformCompanyPermission, transformCompanyRoleOps } from './maintenance.utils';
 
 @Component({
   selector: 'app-maintenance',
@@ -67,6 +67,30 @@ export class MaintenanceComponent {
       }
     });
   }
+  
+  downloadCompanyPermissionData() {
+    this.getCompanyPermissionDataFromDB((companyRequest: {requestSuccess: boolean, data: CompanyPermission[]}) => {
+      if(companyRequest.requestSuccess) {
+        const transformedData = transformCompanyPermission(companyRequest.data);
+        const worksheet = XLSX.utils.json_to_sheet(transformedData);
+        const workbook = {
+          Sheets: { '権限情報メンテ': worksheet },
+          SheetNames: ['権限情報メンテ']
+        };
+
+        const excelBuffer = XLSX.write(workbook, {
+          bookType: 'xlsx',
+          type: 'array'
+        });
+
+        const blob = new Blob([excelBuffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        });
+
+        saveAs(blob, '権限情報メンテ.xlsx');
+      }
+    });
+  }
 
   private getCompanyDataFromDB(cb: Function){
     const response = {
@@ -90,22 +114,43 @@ export class MaintenanceComponent {
   }
 
   private getCompanyRoleOpsDataFromDB(cb: Function) {
-  const response = {
-    requestSuccess: true,
-    data: <CompanyRoleOps[]>[]
-  };
-  this.maintenanceService.getAllCompanyRoleOpsRecords().subscribe({
-    next: (value) => {
-      console.log(value);
-      response.data = value.data;
-      cb(response);
-    },
-    error: (err) => {
-      console.log(err);
-      response.requestSuccess = false;
-      cb(response);
-    },
-  });
-}
+    const response = {
+      requestSuccess: true,
+      data: <CompanyRoleOps[]>[]
+    };
+
+    this.maintenanceService.getAllCompanyRoleOpsRecords().subscribe({
+      next: (value) => {
+        console.log(value);
+        response.data = value.data;
+        cb(response);
+      },
+      error: (err) => {
+        console.log(err);
+        response.requestSuccess = false;
+        cb(response);
+      },
+    });
+  }
+
+  private getCompanyPermissionDataFromDB(cb: Function) {
+    const response = {
+      requestSuccess: true,
+      data: <CompanyPermission[]>[]
+    };
+
+    this.maintenanceService.getAllCompanyPermissionsRecords().subscribe({
+      next: (value) => {
+        console.log(value);
+        response.data = value.data;
+        cb(response);
+      },
+      error: (err) => {
+        console.log(err);
+        response.requestSuccess = false;
+        cb(response);
+      },
+    });
+  }
 
 }

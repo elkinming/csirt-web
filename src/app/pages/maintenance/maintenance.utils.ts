@@ -1,4 +1,4 @@
-import { Company, CompanyRoleOps, TransformedCompany, TransformedCompanyRoleOps } from "./maintenance.models";
+import { Company, CompanyPermission, CompanyRoleOps, TransformedCompany, TransformedCompanyPermission, TransformedCompanyRoleOps } from "./maintenance.models";
 
 export function transformCompanyData(companies: Company[]): TransformedCompany[] {
   return companies.map(company => ({
@@ -32,5 +32,20 @@ export function transformCompanyRoleOps(data: CompanyRoleOps[]): TransformedComp
     '登録日時': item.registDate,
     '更新者': item.updateUser,
     '最終更新日時': item.lastUpdate
+  }));
+}
+
+export function transformCompanyPermission(data: CompanyPermission[]): TransformedCompanyPermission[] {
+  return data.map(item => ({
+    '自社コード1': item.ownCompanyCode1,
+    '自社コード2': item.ownCompanyCode2,
+    '閲覧会社コード1': item.viewCompanyCode1,
+    '閲覧会社コード2': item.viewCompanyCode2,
+    '申請会社コード1': item.applicantCompanyCode1,
+    '申請会社コード2': item.applicantCompanyCode2,
+    '登録者': item.registUser,
+    '登録日時': item.registDate,
+    '更新者': item.updateUser,
+    '最終更新日時': item.lastUpdate,
   }));
 }

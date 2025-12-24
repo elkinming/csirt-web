@@ -20,7 +20,7 @@
 
     <nz-card *nzSpaceItem nzTitle="権限情報メンテ">
       <nz-space nzSize="small">
-        <button *nzSpaceItem nz-button nzType="default">ダウンロード</button>
+        <button (click)="downloadCompanyPermissionData()" *nzSpaceItem nz-button nzType="default">ダウンロード</button>
         <button *nzSpaceItem nz-button nzType="default">アップロード</button>
         <button *nzSpaceItem nz-button nzType="default">ファイルの選択</button>
         <span class="body-text" *nzSpaceItem>選択なし</span>

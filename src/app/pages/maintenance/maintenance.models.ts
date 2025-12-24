@@ -44,6 +44,7 @@ export interface CompanyRoleOps {
   updateUser: string;
   lastUpdate: string;
 }
+
 export interface TransformedCompanyRoleOps {
   '会社コード1': string;
   '会社コード2': string;
@@ -53,6 +54,32 @@ export interface TransformedCompanyRoleOps {
   'メール・URLオプション': string;
   '脆弱性オプション': string;
   '情報オプション': string;
+  '登録者': string;
+  '登録日時': string;
+  '更新者': string;
+  '最終更新日時': string;
+}
+
+export interface CompanyPermission {
+  ownCompanyCode1: string;
+  ownCompanyCode2: string;
+  viewCompanyCode1: string;
+  viewCompanyCode2: string;
+  applicantCompanyCode1: string;
+  applicantCompanyCode2: string;
+  registUser: string;
+  registDate: string;
+  updateUser: string;
+  lastUpdate: string;
+}
+
+export interface TransformedCompanyPermission {
+  '自社コード1': string;
+  '自社コード2': string;
+  '閲覧会社コード1': string;
+  '閲覧会社コード2': string;
+  '申請会社コード1': string;
+  '申請会社コード2': string;
   '登録者': string;
   '登録日時': string;
   '更新者': string;
