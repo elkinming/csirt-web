@@ -50,7 +50,7 @@ export function transformCompanyPermission(data: CompanyPermission[]): Transform
   }));
 }
 
-export function transformBackToOriginalFormat(data: any[]): any[] {
+export function transformCompanyBackToOriginal(data: any[]): any[] {
   return data.map(item => {
     return {
       companyCode1: item['会社コード1'],
@@ -66,6 +66,25 @@ export function transformBackToOriginalFormat(data: any[]): any[] {
       registDate: item['登録日時'],
       updateUser: item['更新者'],
       lastUpdate: item['最終更新日時']
+    };
+  });
+}
+
+export function transformCompanyRoleOpsBackToOriginal(data: any[]): any[] {
+  return data.map(item => {
+    return {
+      companyCode1: item['会社コード1'],
+      companyCode2: item['会社コード2'],
+      roleCode: item['役割コード'],
+      opsEmail: item['メールオプション'],
+      opsUrl: item['URLオプション'],
+      opsEmailUrl: item['メール・URLオプション'],
+      opsVulnerability: item['脆弱性オプション'],
+      opsInfo: item['情報オプション'],
+      registUser: item['登録者'],
+      registDate: item['登録日時'],
+      updateUser: item['更新者'],
+      lastUpdate: item['最終更新日時'],
     };
   });
 }

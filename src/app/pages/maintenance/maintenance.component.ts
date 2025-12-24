@@ -5,11 +5,12 @@ import { MaintenanceService } from './maintenance.service';
 import { Company, CompanyPermission, CompanyRoleOps } from './maintenance.models';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import { transformBackToOriginalFormat, transformCompanyData, transformCompanyPermission, transformCompanyRoleOps } from './maintenance.utils';
+import { transformCompanyBackToOriginal, transformCompanyData, transformCompanyPermission, transformCompanyRoleOps, transformCompanyRoleOpsBackToOriginal } from './maintenance.utils';
 import { NzUploadFile, NzUploadModule } from 'ng-zorro-antd/upload';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-maintenance',
@@ -19,7 +20,9 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 })
 export class MaintenanceComponent {
 
-  fileList: NzUploadFile[] = [];
+  fileListCompany: NzUploadFile[] = [];
+  fileListCompanyRoleOps: NzUploadFile[] = [];
+  fileListCompanyPermission: NzUploadFile[] = [];
 
   constructor(
     private maintenanceService: MaintenanceService,
@@ -99,29 +102,55 @@ export class MaintenanceComponent {
     });
   }
 
-  beforeUpload = (file: NzUploadFile) => {
-    this.fileList = [file];
+  beforeUploadCompany = (file: NzUploadFile) => {
+    this.fileListCompany = [file];
     return false;
   };
 
-  clearFileList() {
-    this.fileList = [];
+  beforeUploadCompanyRoleOps = (file: NzUploadFile) => {
+    this.fileListCompanyRoleOps = [file];
+    return false;
+  };
+
+  clearFileList(listName: string) {
+    if(listName === 'company') {
+      this.fileListCompany = [];
+    } else if(listName === 'companyRoleOps') {
+      this.fileListCompanyRoleOps = [];
+    }
   }
 
   async uploadCompanyData() {
-    console.log(this.fileList);
+    this.uploadDataHelper(
+      this.fileListCompany, 
+      transformCompanyBackToOriginal, 
+      this.maintenanceService.uploadCompanyData, 
+      'company'
+    )
+  }
 
-    if (this.fileList.length === 0) {
+  async uploadCompanyRoleOpsData() {
+    this.uploadDataHelper(
+      this.fileListCompanyRoleOps, 
+      transformCompanyRoleOpsBackToOriginal, 
+      this.maintenanceService.uploadCompanyRoleOpsData, 
+      'companyRoleOps'
+    )
+  }
+
+  private uploadDataHelper = async (fileList: NzUploadFile[], transformFunction: (data: any[]) => any[], serviceMethod: (data: any[]) => Observable<any>, listName: string) => {
+    if (fileList.length === 0) {
       this.msg.error('ファイルが選択されていません');
       return;
     }
     try {
-      const file = this.fileList[0] as any;
+      const file = fileList[0] as any;
       const data = await this.readExcelFile(file);
-      const transformedData = transformBackToOriginalFormat(data);      
-      this.maintenanceService.uploadCompanyData(transformedData).subscribe({
+      const transformedData = transformFunction(data);      
+      serviceMethod(transformedData).subscribe({
         next: (value) => {
           this.msg.success('アップロードしました');
+          this.clearFileList(listName);
         },
         error: (err) => {
           this.msg.error('アップロードできません');

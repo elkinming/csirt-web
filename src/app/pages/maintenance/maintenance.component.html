@@ -4,14 +4,14 @@
       <nz-space nzSize="small">
         <button (click)="downloadCompanyData()" *nzSpaceItem nz-button nzType="default">ダウンロード</button>
         <button (click)="uploadCompanyData()" *nzSpaceItem nz-button nzType="default">アップロード</button>
-         <nz-upload *nzSpaceItem [(nzFileList)]="fileList" [nzBeforeUpload]="beforeUpload" [nzShowUploadList]="false">
+         <nz-upload *nzSpaceItem [(nzFileList)]="fileListCompany" [nzBeforeUpload]="beforeUploadCompany" [nzShowUploadList]="false">
           <button nz-button>
             ファイルの選択
           </button>
         </nz-upload>
-        @if (fileList.length > 0) {
-          <span class="body-text" *nzSpaceItem>{{ fileList[0].name }}</span>
-          <button (click)="clearFileList()" *nzSpaceItem nz-button nzType="text">
+        @if (fileListCompany.length > 0) {
+          <span class="body-text" *nzSpaceItem>{{ fileListCompany[0].name }}</span>
+          <button (click)="clearFileList('company')" *nzSpaceItem nz-button nzType="text">
             <nz-icon nzType="delete" nzTheme="twotone" nzTwotoneColor="#eb4949" />
           </button>
         } @else {
@@ -23,9 +23,20 @@
     <nz-card *nzSpaceItem nzTitle="CSIRTフラグ情報メンテ">
       <nz-space nzSize="small">
         <button (click)="downloadCompanyRoleOpsData()" *nzSpaceItem nz-button nzType="default">ダウンロード</button>
-        <button *nzSpaceItem nz-button nzType="default">アップロード</button>
-        <button *nzSpaceItem nz-button nzType="default">ファイルの選択</button>
-        <span class="body-text" *nzSpaceItem>選択なし</span>
+        <button (click)="uploadCompanyRoleOpsData()" *nzSpaceItem nz-button nzType="default">アップロード</button>
+        <nz-upload *nzSpaceItem [(nzFileList)]="fileListCompanyRoleOps" [nzBeforeUpload]="beforeUploadCompanyRoleOps" [nzShowUploadList]="false">
+          <button nz-button>
+            ファイルの選択
+          </button>
+        </nz-upload>
+        @if (fileListCompanyRoleOps.length > 0) {
+          <span class="body-text" *nzSpaceItem>{{ fileListCompanyRoleOps[0].name }}</span>
+          <button (click)="clearFileList('companyRoleOps')" *nzSpaceItem nz-button nzType="text">
+            <nz-icon nzType="delete" nzTheme="twotone" nzTwotoneColor="#eb4949" />
+          </button>
+        } @else {
+          <span class="body-text" *nzSpaceItem>選択なし</span>
+        }
       </nz-space>
     </nz-card>
 
