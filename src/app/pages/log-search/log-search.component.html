@@ -2,6 +2,7 @@
   <nz-space nzDirection="vertical" nzSize="middle">
     <nz-card *nzSpaceItem nzTitle="操作ログ一覧">
       <nz-space nzSize="large">
+        
         <div *nzSpaceItem>
           <span >対象年：</span>
           <nz-select [(ngModel)]="searchYearSelected">
@@ -10,6 +11,7 @@
             }
           </nz-select>
         </div>
+        
         <div *nzSpaceItem>
           <span>対象月：</span>
           <nz-select [(ngModel)]="searchMonthSelected">
@@ -18,7 +20,9 @@
             }
           </nz-select>
         </div>
-        <button *nzSpaceItem nz-button nzType="default">エクスポート</button>
+        
+        <button (click)="exportlogRecords()" *nzSpaceItem nz-button nzType="default">エクスポート</button>
+
       </nz-space>
     </nz-card>
   
