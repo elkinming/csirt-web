@@ -88,3 +88,20 @@ export function transformCompanyRoleOpsBackToOriginal(data: any[]): any[] {
     };
   });
 }
+
+export function transformCompanyPermissionBackToOriginal(data: any[]): any[] {
+  return data.map(item => {
+    return {
+      ownCompanyCode1: item['自社コード1'],
+      ownCompanyCode2: item['自社コード2'],
+      viewCompanyCode1: item['閲覧会社コード1'],
+      viewCompanyCode2: item['閲覧会社コード2'],
+      applicantCompanyCode1: item['申請会社コード1'],
+      applicantCompanyCode2: item['申請会社コード2'],
+      registUser: item['登録者'],
+      registDate: item['登録日時'],
+      updateUser: item['更新者'],
+      lastUpdate: item['最終更新日時'],
+    };
+  });
+}

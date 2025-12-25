@@ -43,9 +43,20 @@
     <nz-card *nzSpaceItem nzTitle="権限情報メンテ">
       <nz-space nzSize="small">
         <button (click)="downloadCompanyPermissionData()" *nzSpaceItem nz-button nzType="default">ダウンロード</button>
-        <button *nzSpaceItem nz-button nzType="default">アップロード</button>
-        <button *nzSpaceItem nz-button nzType="default">ファイルの選択</button>
-        <span class="body-text" *nzSpaceItem>選択なし</span>
+        <button (click)="uploadCompanyPermissionData()" *nzSpaceItem nz-button nzType="default">アップロード</button>
+        <nz-upload *nzSpaceItem [(nzFileList)]="fileListCompanyPermission" [nzBeforeUpload]="beforeUploadCompanyPermission" [nzShowUploadList]="false">
+          <button nz-button>
+            ファイルの選択
+          </button>
+        </nz-upload>
+        @if (fileListCompanyPermission.length > 0) {
+          <span class="body-text" *nzSpaceItem>{{ fileListCompanyPermission[0].name }}</span>
+          <button (click)="clearFileList('companyPermission')" *nzSpaceItem nz-button nzType="text">
+            <nz-icon nzType="delete" nzTheme="twotone" nzTwotoneColor="#eb4949" />
+          </button>
+        } @else {
+          <span class="body-text" *nzSpaceItem>選択なし</span>
+        }
       </nz-space>
     </nz-card>
   

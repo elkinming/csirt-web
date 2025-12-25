@@ -5,7 +5,7 @@ import { MaintenanceService } from './maintenance.service';
 import { Company, CompanyPermission, CompanyRoleOps } from './maintenance.models';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import { transformCompanyBackToOriginal, transformCompanyData, transformCompanyPermission, transformCompanyRoleOps, transformCompanyRoleOpsBackToOriginal } from './maintenance.utils';
+import { transformCompanyBackToOriginal, transformCompanyData, transformCompanyPermission, transformCompanyPermissionBackToOriginal, transformCompanyRoleOps, transformCompanyRoleOpsBackToOriginal } from './maintenance.utils';
 import { NzUploadFile, NzUploadModule } from 'ng-zorro-antd/upload';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -112,11 +112,18 @@ export class MaintenanceComponent {
     return false;
   };
 
+  beforeUploadCompanyPermission = (file: NzUploadFile) => {
+    this.fileListCompanyPermission = [file];
+    return false;
+  };
+
   clearFileList(listName: string) {
     if(listName === 'company') {
       this.fileListCompany = [];
     } else if(listName === 'companyRoleOps') {
       this.fileListCompanyRoleOps = [];
+    } else if(listName === 'companyPermission') {
+      this.fileListCompanyPermission = [];
     }
   }
 
@@ -135,6 +142,15 @@ export class MaintenanceComponent {
       transformCompanyRoleOpsBackToOriginal, 
       this.maintenanceService.uploadCompanyRoleOpsData, 
       'companyRoleOps'
+    )
+  }
+
+  async uploadCompanyPermissionData() {
+    this.uploadDataHelper(
+      this.fileListCompanyPermission, 
+      transformCompanyPermissionBackToOriginal, 
+      this.maintenanceService.uploadCompanyPermissionData, 
+      'companyPermission'
     )
   }
 
