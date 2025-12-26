@@ -86,6 +86,7 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
   setOfCheckedId = new Set<number>(); 
   enableCellSpan = true;
   searchValue = '';
+  isLoading = false;
 
   currentKey: ColumnKey = 'companyCode1';
 
@@ -164,6 +165,7 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
 
     // ✅ 初期データ（仮）
     // this.rawDbDataStore = generateMockData(10);
+    this.isLoading = true;
     this.componentService.getAllInformationSecurityRecordsByKeyword("").subscribe({
       next: (value) => {
         console.log(value);
@@ -172,9 +174,11 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
         });
         this.rawDbDataStore = value.data;
         this.refreshRowData();
+        this.hideLoadingTable();
       },
       error: (error) => {
         console.log(error);
+        this.hideLoadingTable();
       },
     })
 
@@ -222,12 +226,12 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
   onFilterOpen(columnKey: string){
     console.log(columnKey);
     this.currentKey = columnKey as ColumnKey;
-
   }
 
   onFilterSearchButton(){
     
     const searchDto = mapColumnFilterToSearchDto(this.filterState);
+    this.isLoading = true;
     this.componentService.getInformationSecurityRecordsByFilter(searchDto).subscribe({
       next: (value) => {
         console.log(value);
@@ -237,6 +241,7 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
         });
         this.rawDbDataStore = value.data;
         this.refreshRowData();
+        this.hideLoadingTable();
         this.filterState[this.currentKey].visible = false;
         
         if(
@@ -253,6 +258,7 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.log(error);
+        this.hideLoadingTable();
         this.msg.error('検索できません');
       },
     })
@@ -265,6 +271,7 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
     this.filterState[this.currentKey].data.filterData3 = "";
     
     const searchDto = mapColumnFilterToSearchDto(this.filterState);
+    this.isLoading = true;
     this.componentService.getInformationSecurityRecordsByFilter(searchDto).subscribe({
       next: (value) => {
         console.log(value);
@@ -274,11 +281,13 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
         this.msg.success('クリアできました');
         this.rawDbDataStore = value.data;
         this.refreshRowData();
+        this.hideLoadingTable();
         this.filterState[this.currentKey].visible = false;
         this.filterState[this.currentKey].active = false;
       },
       error: (error) => {
         console.log(error);
+        this.hideLoadingTable();
         this.msg.error('クリアできません');
       },
     })
@@ -309,6 +318,7 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
   }
 
   searchByKeyword(){
+    this.isLoading = true;
     this.componentService.getAllInformationSecurityRecordsByKeyword(this.searchValue).subscribe({
       next: (value) => {
         console.log(value);
@@ -318,9 +328,11 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
         this.msg.success('検索できました');
         this.rawDbDataStore = value.data;
         this.refreshRowData();
+        this.hideLoadingTable();
       },
       error: (error) => {
         console.log(error);
+        this.hideLoadingTable();
         this.msg.error('検索できません');
       },
     })
@@ -351,6 +363,12 @@ export class OrgListComponentV3 implements OnInit, OnDestroy {
   /** “仮DB”から一覧表示用 rowData を再生成 */
   private refreshRowData() {
     this.rowData = this.rawDbDataStore;
+  }
+
+  private hideLoadingTable(){
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 500);
   }
 
 }

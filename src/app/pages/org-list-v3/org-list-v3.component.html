@@ -21,11 +21,12 @@
       #nestedTable 
       [nzData]="rowData" 
       [(nzPageSize)]="rowData.length"
-      [nzScroll]="{ x: '100%', y: '48vh' }"
+      [nzScroll]="{ x: '100%', y: '55vh' }"
       nzSize="small"
       nzTableLayout="fixed"
       nzBordered
-      nzShowPagination
+      nzShowPagination="false"
+      [nzLoading]="isLoading"
       >
       <thead>
         <tr>

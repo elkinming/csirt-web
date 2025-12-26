@@ -64,7 +64,7 @@ export class LogSearchComponent {
           type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         });
 
-        saveAs(blob, '操作ログ一覧.xlsx');
+        saveAs(blob, `操作ログ一覧 ${this.searchYearSelected}年${this.searchMonthSelected}月.xlsx`);
       }
     })
   }
